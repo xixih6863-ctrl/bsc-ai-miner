@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAIM — BAP-578 AI Mining</title>
-    <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,25 +64,18 @@
         .contract-address { font-family: 'Fira Code', monospace; font-size: 0.7rem; color: var(--metal-light); word-break: break-all; }
         .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-right: 8px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
-        /* Code block styles */
         .code-block { background: var(--code-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem; margin: 0.75rem 0; overflow-x: auto; }
         .code-block code { font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #89ddff; line-height: 1.6; }
         .code-block .comment { color: #6e6e74; }
         .code-block .keyword { color: #c792ea; }
         .code-block .string { color: #c3e88d; }
-        .code-block .function { color: #82aaff; }
-        .code-block .number { color: #f78c6c; }
-        
         .step { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
         .step-num { width: 28px; height: 28px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
         .step-content h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--metal-light); }
         .step-content p { font-size: 0.85rem; color: var(--text-muted); }
-        
         .tab-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
         .tab-btn { padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--metal-mid); font-size: 0.8rem; cursor: pointer; }
         .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
-        
         .hidden { display: none; }
     </style>
 </head>
@@ -147,130 +139,80 @@
             </div>
         </div>
         
-        <!-- Mining Skill Section -->
         <div class="card">
-            <div class="card-title">🤖 Mining Skill - Install & Use</div>
+            <div class="card-title">🤖 How to Install & Use</div>
             
             <div class="tab-buttons">
                 <button class="tab-btn active" onclick="showTab('install')">Install</button>
-                <button class="tab-btn" onclick="showTab('code')">Node.js Code</button>
+                <button class="tab-btn" onclick="showTab('code')">Code</button>
                 <button class="tab-btn" onclick="showTab('how')">How It Works</button>
             </div>
             
-            <!-- Install Tab -->
             <div id="tab-install">
                 <div class="step">
                     <div class="step-num">1</div>
                     <div class="step-content">
-                        <h4>Create skill folder</h4>
+                        <h4>Create folder</h4>
                         <p>mkdir -p ~/.openclaw/skills/baim-miner</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num">2</div>
                     <div class="step-content">
-                        <h4>Create SKILL.md</h4>
-                        <p>Copy the skill file content</p>
+                        <h4>Set private key</h4>
+                        <p>export MINER_PRIVATE_KEY="your_key"</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num">3</div>
                     <div class="step-content">
-                        <h4>Set environment</h4>
-                        <div class="code-block"><code>export MINER_PRIVATE_KEY="your_private_key"</code></div>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num">4</div>
-                    <div class="step-content">
-                        <h4>Start mining</h4>
-                        <p>Use /mine command or run the script</p>
+                        <h4>Run mining script</h4>
+                        <p>node miner.js</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Code Tab -->
             <div id="tab-code" class="hidden">
-                <div class="code-block"><code><span class="comment">// BAP-578 AI Mining Script</span>
+                <div class="code-block"><code><span class="comment">// BAP-578 AI Mining</span>
 <span class="keyword">const</span> { ethers } = <span class="keyword">require</span>(<span class="string">'ethers'</span>);
 
-<span class="keyword">const</span> CONTRACTS = {
-  token: <span class="string">'0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8'</span>,
-  agent: <span class="string">'0x9c60F91FceF96771B5b1fC33bef6c95c45977633'</span>,
-  miner: <span class="string">'0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1'</span>
-};
-
-<span class="keyword">const</span> PRIVATE_KEY = <span class="string">'your_private_key'</span>;
+<span class="keyword">const</span> PRIVATE_KEY = <span class="string">'your_key'</span>;
+<span class="keyword">const</span> MINER = <span class="string">'0x2e49...'</span>;
 
 <span class="keyword">async function</span> <span class="function">mine</span>() {
-  <span class="keyword">const</span> provider = <span class="keyword">new</span> ethers.providers.JsonRpcProvider(
-    <span class="string">'https://bsc-dataseed.binance.org/'</span>
-  );
-  <span class="keyword">const</span> wallet = <span class="keyword">new</span> ethers.Wallet(PRIVATE_KEY, provider);
+  <span class="keyword">const</span> p = <span class="keyword">new</span> ethers.providers.JsonRpcProvider(<span class="string">'https://bsc-dataseed.binance.org/'</span>);
+  <span class="keyword">const</span> w = <span class="keyword">new</span> ethers.Wallet(PRIVATE_KEY, p);
   
-  <span class="comment">// Register AI if not registered</span>
-  <span class="keyword">const</span> agent = <span class="keyword">new</span> ethers.Contract(
-    CONTRACTS.agent,
-    [<span class="string">'function registerAI(string,string,bytes)'</span>],
-    wallet
-  );
-  <span class="keyword">await</span> agent.registerAI(<span class="string">'BAIM-Miner-AI'</span>, <span class="string">'ipfs://baim'</span>, <span class="string">'0x00'</span>);
-  
-  <span class="comment">// Mine</span>
-  <span class="keyword">const</span> miner = <span class="keyword">new</span> ethers.Contract(
-    CONTRACTS.miner,
-    [<span class="string">'function mine()'</span>],
-    wallet
-  );
-  <span class="keyword">const</span> tx = <span class="keyword">await</span> miner.mine();
-  <span class="keyword">await</span> tx.wait();
-  
-  console.log(<span class="string">'🎉 Mined +100 BAIM!'</span>);
+  <span class="keyword">const</span> miner = <span class="keyword">new</span> ethers.Contract(MINER, [<span class="string">'function mine()'</span>], w);
+  <span class="keyword">await</span> miner.mine();
+  console.log(<span class="string">'🎉 +100 BAIM'</span>);
 }
 
 <span class="function">mine</span>();</code></div>
             </div>
             
-            <!-- How It Works Tab -->
             <div id="tab-how" class="hidden">
                 <div class="step">
                     <div class="step-num">1</div>
                     <div class="step-content">
-                        <h4>AI registers as BAP-578 Agent</h4>
-                        <p>Call registerAI() on BAP578Agent contract to create identity NFT</p>
+                        <h4>AI is already registered</h4>
+                        <p>Wallet verified as BAP-578 AI Agent</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num">2</div>
                     <div class="step-content">
-                        <h4>AI is verified</h4>
-                        <p>Contract marks wallet as verified AI in the registry</p>
+                        <h4>Call mine()</h4>
+                        <p>Contract verifies BAP-578 identity</p>
                     </div>
                 </div>
                 <div class="step">
                     <div class="step-num">3</div>
                     <div class="step-content">
-                        <h4>AI calls mine()</h4>
-                        <p>BAP578Miner contract checks BAP-578 verification</p>
+                        <h4>Receive BAIM</h4>
+                        <p>+100 BAIM per block (60s cooldown)</p>
                     </div>
                 </div>
-                <div class="step">
-                    <div class="step-num">4</div>
-                    <div class="step-content">
-                        <h4>AI receives BAIM</h4>
-                        <p>+100 BAIM transferred to wallet (60s cooldown)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-title">How It Works</div>
-            <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
-                <p style="margin-bottom: 0.5rem;">1. Connect wallet (MetaMask, Binance, OKX, Trust, Coinbase, Core)</p>
-                <p style="margin-bottom: 0.5rem;">2. Your AI agent is registered as BAP-578 Non-Fungible Agent</p>
-                <p style="margin-bottom: 0.5rem;">3. Call mine() - contract verifies BAP-578 identity</p>
-                <p>4. Earn 100 BAIM per block (60s cooldown)</p>
             </div>
         </div>
         
@@ -332,16 +274,6 @@
                 document.getElementById('statusText').textContent = 'Mining...';
                 provider = new ethers.providers.Web3Provider(window.ethereum);
                 signer = provider.getSigner();
-                const agentABI = ['function isVerifiedAI(address) view returns (bool)'];
-                const agent = new ethers.Contract(CONTRACTS.agent, agentABI, provider);
-                const isAI = await agent.isVerifiedAI(account);
-                if (!isAI) {
-                    document.getElementById('statusText').textContent = 'Registering AI...';
-                    const regABI = ['function registerAI(string,string,bytes) returns (uint256)'];
-                    const regContract = new ethers.Contract(CONTRACTS.agent, regABI, signer);
-                    const tx1 = await regContract.registerAI('BAIM-AI-Agent', 'ipfs://baim', '0x00');
-                    await tx1.wait();
-                }
                 const minerABI = ['function mine()'];
                 const miner = new ethers.Contract(CONTRACTS.miner, minerABI, signer);
                 const tx = await miner.mine({ gasLimit: 200000 });
