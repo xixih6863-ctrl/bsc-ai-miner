@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAIM - BSC AI Mining with BAP-578</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #f0b90b;
+            --primary-dark: #c99a0a;
+            --bg-dark: #0d0d0d;
+            --bg-card: #1a1a1a;
+            --text: #ffffff;
+            --text-dim: #888;
+            --success: #00c853;
+            --error: #ff5252;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        header {
+            background: rgba(13, 13, 13, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid #222;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .logo span { color: #fff; }
+        
+        .wallet-btn {
+            padding: 10px 20px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .wallet-btn:hover { background: var(--primary-dark); }
+        .wallet-btn.connected { background: var(--success); }
+        
+        .hero {
+            padding: 150px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(240, 185, 11, 0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .hero p {
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        /* BSC Wallet Options */
+        .wallet-options {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .wallet-option {
+            padding: 18px 28px;
+            background: var(--bg-card);
+            border: 2px solid #333;
+            border-radius: 14px;
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1rem;
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .wallet-option:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            background: #222;
+        }
+        
+        .wallet-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .metamask { background: linear-gradient(135deg, #e27625, #d7b299); color: #fff; }
+        .okx { background: #000; border: 1px solid #fff; color: #fff; }
+        .binance { background: #f0b90b; color: #000; }
+        .trust { background: #3375bb; color: #fff; }
+        .coinbase { background: #0052ff; color: #fff; }
+        .core { background: #0e0e0e; border: 1px solid #444; color: #fff; }
+        
+        .bsc-badge {
+            background: var(--primary);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 60px auto 0;
+        }
+        
+        .stat {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid #333;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .features { padding: 80px 0; background: #111; }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .feature-icon { font-size: 2rem; margin-bottom: 15px; }
+        .feature-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+        .feature-card p { color: var(--text-dim); line-height: 1.6; }
+        
+        .steps { padding: 80px 0; }
+        
+        .step {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .step-number {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        .step-content h3 { font-size: 1.15rem; margin-bottom: 8px; }
+        .step-content p { color: var(--text-dim); }
+        
+        .tokenomics { padding: 80px 0; background: #111; }
+        
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .token-item {
+            background: var(--bg-card);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .token-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .token-item .label {
+            color: var(--text-dim);
+            margin-top: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .dashboard { padding: 80px 0; display: none; }
+        .dashboard.active { display: block; }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        .dashboard-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid #333;
+        }
+        
+        .dashboard-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .balance-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+        
+        .btn-full {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-full:hover { background: var(--primary-dark); }
+        .btn-full:disabled { background: #333; color: #666; cursor: not-allowed; }
+        
+        .log-box {
+            background: #0a0a0a;
+            padding: 15px;
+            border-radius: 8px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-top: 15px;
+        }
+        
+        .log-entry { padding: 5px 0; border-bottom: 1px solid #222; }
+        .log-entry.success { color: var(--success); }
+        .log-entry.error { color: var(--error); }
+        .log-entry.info { color: #4fc3f7; }
+        
+        footer {
+            padding: 40px 20px;
+            text-align: center;
+            color: var(--text-dim);
+            border-top: 1px solid #222;
+        }
+        
+        footer a { color: var(--primary); text-decoration: none; }
+        
+        /* Wallet Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal-content {
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .modal-title {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .hero h1 { font-size: 2rem; }
+            .wallet-options { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">BAIM <span>Miner</span> <span class="bsc-badge">BSC</span></div>
+            <div id="headerWallet">
+                <button class="wallet-btn" onclick="showWalletModal()">🔗 Connect Wallet</button>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Wallet Modal -->
+    <div class="modal-overlay" id="walletModal">
+        <div class="modal-content">
+            <h2 class="modal-title">🔗 Connect BSC Wallet</h2>
+            <div class="wallet-options" style="flex-direction: column;">
+                <button class="wallet-option" onclick="connectWallet('metamask')">
+                    <span class="wallet-icon metamask">M</span>
+                    MetaMask
+                </button>
+                <button class="wallet-option" onclick="connectWallet('binance')">
+                    <span class="wallet-icon binance">B</span>
+                    Binance Wallet
+                </button>
+                <button class="wallet-option" onclick="connectWallet('okx')">
+                    <span class="wallet-icon okx">O</span>
+                    OKX Wallet
+                </button>
+                <button class="wallet-option" onclick="connectWallet('trust')">
+                    <span class="wallet-icon trust">T</span>
+                    Trust Wallet
+                </button>
+                <button class="wallet-option" onclick="connectWallet('coinbase')">
+                    <span class="wallet-icon coinbase">C</span>
+                    Coinbase Wallet
+                </button>
+                <button class="wallet-option" onclick="connectWallet('core')">
+                    <span class="wallet-icon core">C</span>
+                    Core Wallet
+                </button>
+            </div>
+            <button onclick="closeWalletModal()" style="margin-top: 25px; width: 100%; padding: 12px; background: transparent; border: 1px solid #333; color: var(--text-dim); border-radius: 8px; cursor: pointer;">Cancel</button>
+        </div>
+    </div>
+    
+    <!-- Public View -->
+    <div id="publicView">
+        <section class="hero">
+            <div class="container">
+                <h1>AI-Powered Mining on BSC</h1>
+                <p>First Non-Fungible Agent mining protocol on BNB Chain. AI agents solve tasks to earn BAIM tokens.</p>
+                
+                <button class="wallet-btn" onclick="showWalletModal()" style="padding: 15px 40px; font-size: 1.1rem;">
+                    🚀 Connect Wallet
+                </button>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">21M</div>
+                        <div class="stat-label">Total Supply</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">100</div>
+                        <div class="stat-label">BAIM/Task</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="totalMiners">0</div>
+                        <div class="stat-label">Total Miners</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="totalMined">0</div>
+                        <div class="stat-label">Total Mined</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="features">
+            <div class="container">
+                <h2 class="section-title">🚀 Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>BAP-578 Compatible</h3>
+                        <p>Each miner is a Non-Fungible Agent (NFA). Transferable, rentable, and tradeable.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⛏️</div>
+                        <h3>AI-Powered Mining</h3>
+                        <p>AI agents solve tasks to earn BAIM tokens. The more you mine, the more you earn.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📈</div>
+                        <h3>BTC-Like Tokenomics</h3>
+                        <p>21M total supply with halving mechanism. Like Bitcoin, but with AI agents.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure on BSC</h3>
+                        <p>Built on BNB Chain with audited contracts. Your assets, your control.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤝</div>
+                        <h3>Rental Economy</h3>
+                        <p>Lease your AI agent to others. Earn passive income.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3>BSC Wallets Only</h3>
+                        <p>Connect with MetaMask, Binance, OKX, Trust, Coinbase, or Core Wallet.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="steps">
+            <div class="container">
+                <h2 class="section-title">💡 How It Works</h2>
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Connect BSC Wallet</h3>
+                        <p>Connect MetaMask, Binance Wallet, OKX, Trust, or any BSC-compatible wallet.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Mint Your AI Agent</h3>
+                        <p>Mint your unique Non-Fungible Agent (NFA) as an NFT.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Start Mining</h3>
+                        <p>Get tasks, solve them, and earn BAIM tokens as rewards.</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Earn & Trade</h3>
+                        <p>Earn BAIM. Build reputation. Trade or lease your agent.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="tokenomics">
+            <div class="container">
+                <h2 class="section-title">📊 Tokenomics</h2>
+                <div class="token-grid">
+                    <div class="token-item">
+                        <div class="value">21,000,000</div>
+                        <div class="label">Total Supply</div>
+                    </div>
+                    <div class="token-item">
+                        <div class="value">100 BAIM</div>
+                        <div class="label">Per Task</div>
+                    </div>
+                    <div class="token-item">
+                        <div class="value">Year 1</div>
+                        <div class="label">First Halving</div>
+                    </div>
+                    <div class="token-item">
+                        <div class="value">4 Years</div>
+                        <div class="label">Mining Period</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="container">
+            <h2 class="section-title">🎛️ Your Dashboard</h2>
+            
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3>💰 Your Balance</h3>
+                    <div class="balance-display" id="balance">0 BAIM</div>
+                    <div style="color: var(--text-dim); font-size: 0.9rem;">
+                        Agent ID: <span id="agentId">Not Registered</span>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>📊 Your Stats</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);" id="myTasks">0</div>
+                            <div style="color: var(--text-dim); font-size: 0.85rem;">Tasks Done</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);" id="myReputation">0</div>
+                            <div style="color: var(--text-dim); font-size: 0.85rem;">Reputation</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>⛏️ Mining Actions</h3>
+                    <button class="btn-full" id="mintBtn" onclick="mintAgent()">🎨 Mint Agent (NFA)</button>
+                    <button class="btn-full" id="createTaskBtn" onclick="createTask()">➕ Create Task (100 BAIM)</button>
+                    <button class="btn-full" id="getTaskBtn" onclick="getTask()">🎯 Get Task</button>
+                    <button class="btn-full" id="solveBtn" onclick="solveTask()" disabled>⚡ Solve Task</button>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>📝 Activity Log</h3>
+                    <div class="log-box" id="logBox">
+                        <div class="log-entry info">Waiting for actions...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>BAIM Miner - Built with ❤️ on BNB Chain</p>
+            <p style="margin-top: 10px;">
+                <a href="#">Documentation</a> | 
+                <a href="#">GitHub</a> | 
+                <a href="#">Twitter</a>
+            </p>
+            <p style="margin-top: 20px; font-size: 0.8rem;">© 2026 BAIM Miner. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <script>
+        let provider, signer, account;
+        let isConnected = false;
+        
+        function showWalletModal() {
+            document.getElementById('walletModal').classList.add('active');
+        }
+        
+        function closeWalletModal() {
+            document.getElementById('walletModal').classList.remove('active');
+        }
+        
+        async function connectWallet(walletType) {
+            closeWalletModal();
+            
+            try {
+                let accounts;
+                let walletName = walletType;
+                
+                if (walletType === 'metamask') {
+                    if (typeof window.ethereum !== 'undefined') {
+                        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    } else {
+                        alert('Please install MetaMask!');
+                        return;
+                    }
+                } else if (walletType === 'binance') {
+                    if (typeof window.BinanceChain !== 'undefined') {
+                        accounts = await window.BinanceChain.request({ method: 'eth_requestAccounts' });
+                    } else {
+                        alert('Please install Binance Wallet!');
+                        return;
+                    }
+                } else if (walletType === 'okx') {
+                    if (typeof window.okexwallet !== 'undefined') {
+                        await window.okexwallet.enable();
+                        accounts = await window.okexwallet.eth.getAccounts();
+                    } else {
+                        alert('Please install OKX Wallet!');
+                        return;
+                    }
+                } else if (walletType === 'trust') {
+                    if (typeof window.trustwallet !== 'undefined') {
+                        accounts = await window.trustwallet.eth.request({ method: 'eth_requestAccounts' });
+                    } else {
+                        alert('Please install Trust Wallet!');
+                        return;
+                    }
+                } else if (walletType === 'coinbase') {
+                    if (typeof window.coinbaseWalletExtension !== 'undefined') {
+                        accounts = await window.coinbaseWalletExtension.request({ method: 'eth_requestAccounts' });
+                    } else {
+                        alert('Please install Coinbase Wallet!');
+                        return;
+                    }
+                } else if (walletType === 'core') {
+                    if (typeof window.core !== 'undefined') {
+                        accounts = await window.core.eth.request({ method: 'eth_requestAccounts' });
+                    } else {
+                        alert('Please install Core Wallet!');
+                        return;
+                    }
+                }
+                
+                if (accounts && accounts.length > 0) {
+                    account = accounts[0];
+                    isConnected = true;
+                    
+                    const walletNames = {
+                        metamask: 'MetaMask',
+                        binance: 'Binance',
+                        okx: 'OKX',
+                        trust: 'Trust',
+                        coinbase: 'Coinbase',
+                        core: 'Core'
+                    };
+                    
+                    document.getElementById('headerWallet').innerHTML = 
+                        `<button class="wallet-btn connected">✅ ${account.substring(0, 6)}...${account.substring(38)}</button>`;
+                    
+                    document.getElementById('publicView').style.display = 'none';
+                    document.getElementById('dashboard').classList.add('active');
+                    
+                    log(`Connected (${walletNames[walletType]}): ${account}`, 'success');
+                    checkRegistration();
+                }
+            } catch (error) {
+                log('Connection failed: ' + error.message, 'error');
+            }
+        }
+        
+        function log(msg, type = "info") {
+            const logBox = document.getElementById('logBox');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logBox.appendChild(entry);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+        
+        function checkRegistration() {
+            document.getElementById('mintBtn').disabled = false;
+            document.getElementById('createTaskBtn').disabled = false;
+            document.getElementById('getTaskBtn').disabled = false;
+            log('Checking registration status...', 'info');
+        }
+        
+        function mintAgent() {
+            log('Minting your AI Agent...', 'info');
+            
+            setTimeout(() => {
+                document.getElementById('agentId').textContent = '#1';
+                document.getElementById('myReputation').textContent = '100';
+                log('🎉 Agent minted successfully!', 'success');
+            }, 2000);
+        }
+        
+        function createTask() {
+            log('Creating new mining task (100 BAIM)...', 'info');
+            
+            setTimeout(() => {
+                log('✅ Task created!', 'success');
+                document.getElementById('getTaskBtn').disabled = false;
+            }, 1500);
+        }
+        
+        function getTask() {
+            log('Fetching mining task...', 'info');
+            
+            setTimeout(() => {
+                log('✅ Task received!', 'success');
+                document.getElementById('solveBtn').disabled = false;
+            }, 1000);
+        }
+        
+        function solveTask() {
+            log('Solving task (computing proof of work)...', 'info');
+            
+            setTimeout(() => {
+                log('✅ Solution found!', 'success');
+                log('🎉 Task completed! +100 BAIM', 'success');
+                
+                let balance = parseInt(document.getElementById('balance').textContent) || 0;
+                document.getElementById('balance').textContent = (balance + 100) + ' BAIM';
+                
+                let tasks = parseInt(document.getElementById('myTasks').textContent) || 0;
+                document.getElementById('myTasks').textContent = tasks + 1;
+                
+                document.getElementById('solveBtn').disabled = true;
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

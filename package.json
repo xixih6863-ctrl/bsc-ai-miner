@@ -1,0 +1,25 @@
+{
+  "name": "bsc-ai-miner",
+  "version": "1.0.0",
+  "description": "智能 AI 挖矿系统",
+  "main": "actual-wallet.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://xixih6863-ctrl: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@github.com/xixih6863-ctrl/bsc-ai-miner.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xixih6863-ctrl/bsc-ai-miner/issues"
+  },
+  "homepage": "https://github.com/xixih6863-ctrl/bsc-ai-miner#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.5",
+    "dotenv": "^16.6.1",
+    "ethers": "^5.7.2"
+  }
+}
