@@ -1,0 +1,1 @@
+[{"inputs":[{"internalType":"address","name":"_miner","type":"address"}],"name":"canMine","outputs":[{"internalType":"bool","name":"","type":"bool"},{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"}]
