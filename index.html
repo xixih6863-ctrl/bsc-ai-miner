@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0d0d0f;
@@ -20,6 +20,7 @@
             --text: #e0e0e4;
             --text-muted: #888890;
             --primary: #f0b90b;
+            --code-bg: #0a0a0c;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -30,7 +31,7 @@
             line-height: 1.5;
         }
         .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
-        header { text-align: center; margin-bottom: 2.5rem; }
+        header { text-align: center; margin-bottom: 2rem; }
         h1 { font-weight: 700; font-size: 1.75rem; letter-spacing: 0.05em; color: var(--accent); }
         .card {
             background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 60%), var(--bg-card);
@@ -45,7 +46,7 @@
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
         }
-        .card-title { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--metal-mid); margin-bottom: 0.5rem; }
+        .card-title { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--metal-mid); margin-bottom: 0.75rem; }
         .card-value { font-size: 1.5rem; font-weight: 500; color: var(--metal-light); }
         .card-value.primary { color: var(--primary); }
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
@@ -56,14 +57,34 @@
         .btn:hover { background: #c99a0a; transform: translateY(-2px); }
         .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text); }
         .btn-secondary:hover { background: rgba(255,255,255,0.12); }
-        footer { margin-top: 3rem; padding-top: 1.5rem; padding-bottom: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; }
+        footer { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; }
         footer a { color: var(--metal-mid); text-decoration: none; font-size: 0.9rem; }
         .contract-item { padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .contract-item:last-child { border-bottom: none; }
         .contract-name { font-size: 0.7rem; color: var(--metal-mid); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
-        .contract-address { font-family: monospace; font-size: 0.75rem; color: var(--metal-light); word-break: break-all; }
+        .contract-address { font-family: 'Fira Code', monospace; font-size: 0.7rem; color: var(--metal-light); word-break: break-all; }
         .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-right: 8px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* Code block styles */
+        .code-block { background: var(--code-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem; margin: 0.75rem 0; overflow-x: auto; }
+        .code-block code { font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #89ddff; line-height: 1.6; }
+        .code-block .comment { color: #6e6e74; }
+        .code-block .keyword { color: #c792ea; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .function { color: #82aaff; }
+        .code-block .number { color: #f78c6c; }
+        
+        .step { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
+        .step-num { width: 28px; height: 28px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+        .step-content h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--metal-light); }
+        .step-content p { font-size: 0.85rem; color: var(--text-muted); }
+        
+        .tab-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .tab-btn { padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--metal-mid); font-size: 0.8rem; cursor: pointer; }
+        .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
+        
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -73,6 +94,7 @@
                 BAIM Mining Dashboard — <a href="https://github.com/xixih6863-ctrl/bsc-ai-miner" style="color: var(--metal-mid);">BAP-578</a>
             </p>
         </header>
+        
         <div class="timer-wrapper">
             <div class="card card-timer">
                 <div class="card-title">Next Block In</div>
@@ -80,6 +102,7 @@
                 <div class="card-title" id="statusText" style="margin-top: 0.5rem;">Ready to mine</div>
             </div>
         </div>
+        
         <div class="grid">
             <div class="card">
                 <div class="card-title">Your Balance</div>
@@ -101,11 +124,13 @@
                 <div class="card-title" style="margin-top: 0.25rem;">BAIM</div>
             </div>
         </div>
+        
         <div class="card">
             <div class="card-title">Actions</div>
             <button class="btn" onclick="mine()">⛏️ Mine Now</button>
             <button class="btn btn-secondary" onclick="checkStatus()">🔄 Refresh</button>
         </div>
+        
         <div class="card">
             <div class="card-title">Deployed Contracts</div>
             <div class="contract-item">
@@ -121,6 +146,124 @@
                 <div class="contract-address">0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1</div>
             </div>
         </div>
+        
+        <!-- Mining Skill Section -->
+        <div class="card">
+            <div class="card-title">🤖 Mining Skill - Install & Use</div>
+            
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('install')">Install</button>
+                <button class="tab-btn" onclick="showTab('code')">Node.js Code</button>
+                <button class="tab-btn" onclick="showTab('how')">How It Works</button>
+            </div>
+            
+            <!-- Install Tab -->
+            <div id="tab-install">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <h4>Create skill folder</h4>
+                        <p>mkdir -p ~/.openclaw/skills/baim-miner</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <h4>Create SKILL.md</h4>
+                        <p>Copy the skill file content</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <h4>Set environment</h4>
+                        <div class="code-block"><code>export MINER_PRIVATE_KEY="your_private_key"</code></div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <h4>Start mining</h4>
+                        <p>Use /mine command or run the script</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Code Tab -->
+            <div id="tab-code" class="hidden">
+                <div class="code-block"><code><span class="comment">// BAP-578 AI Mining Script</span>
+<span class="keyword">const</span> { ethers } = <span class="keyword">require</span>(<span class="string">'ethers'</span>);
+
+<span class="keyword">const</span> CONTRACTS = {
+  token: <span class="string">'0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8'</span>,
+  agent: <span class="string">'0x9c60F91FceF96771B5b1fC33bef6c95c45977633'</span>,
+  miner: <span class="string">'0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1'</span>
+};
+
+<span class="keyword">const</span> PRIVATE_KEY = <span class="string">'your_private_key'</span>;
+
+<span class="keyword">async function</span> <span class="function">mine</span>() {
+  <span class="keyword">const</span> provider = <span class="keyword">new</span> ethers.providers.JsonRpcProvider(
+    <span class="string">'https://bsc-dataseed.binance.org/'</span>
+  );
+  <span class="keyword">const</span> wallet = <span class="keyword">new</span> ethers.Wallet(PRIVATE_KEY, provider);
+  
+  <span class="comment">// Register AI if not registered</span>
+  <span class="keyword">const</span> agent = <span class="keyword">new</span> ethers.Contract(
+    CONTRACTS.agent,
+    [<span class="string">'function registerAI(string,string,bytes)'</span>],
+    wallet
+  );
+  <span class="keyword">await</span> agent.registerAI(<span class="string">'BAIM-Miner-AI'</span>, <span class="string">'ipfs://baim'</span>, <span class="string">'0x00'</span>);
+  
+  <span class="comment">// Mine</span>
+  <span class="keyword">const</span> miner = <span class="keyword">new</span> ethers.Contract(
+    CONTRACTS.miner,
+    [<span class="string">'function mine()'</span>],
+    wallet
+  );
+  <span class="keyword">const</span> tx = <span class="keyword">await</span> miner.mine();
+  <span class="keyword">await</span> tx.wait();
+  
+  console.log(<span class="string">'🎉 Mined +100 BAIM!'</span>);
+}
+
+<span class="function">mine</span>();</code></div>
+            </div>
+            
+            <!-- How It Works Tab -->
+            <div id="tab-how" class="hidden">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <h4>AI registers as BAP-578 Agent</h4>
+                        <p>Call registerAI() on BAP578Agent contract to create identity NFT</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <h4>AI is verified</h4>
+                        <p>Contract marks wallet as verified AI in the registry</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <h4>AI calls mine()</h4>
+                        <p>BAP578Miner contract checks BAP-578 verification</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <h4>AI receives BAIM</h4>
+                        <p>+100 BAIM transferred to wallet (60s cooldown)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="card">
             <div class="card-title">How It Works</div>
             <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
@@ -130,11 +273,22 @@
                 <p>4. Earn 100 BAIM per block (60s cooldown)</p>
             </div>
         </div>
+        
         <footer>
             <a href="https://bscscan.com/address/0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8">BSCScan</a>
         </footer>
     </div>
+    
     <script>
+        function showTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-install').classList.add('hidden');
+            document.getElementById('tab-code').classList.add('hidden');
+            document.getElementById('tab-how').classList.add('hidden');
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+        }
+        
         const CONTRACTS = {
             token: '0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8',
             agent: '0x9c60F91FceF96771B5b1fC33bef6c95c45977633',
@@ -143,6 +297,7 @@
         const BSC_CHAIN_ID = '0x38';
         let account, provider, signer, timer = 60;
         setInterval(() => { if (timer > 0) { timer--; document.getElementById('nextBlockTimer').textContent = timer + 's'; } }, 1000);
+        
         async function connectWallet() {
             if (typeof window.ethereum === 'undefined') { alert('Please install MetaMask!'); return null; }
             try {
@@ -155,6 +310,7 @@
                 return account;
             } catch (error) { alert('Connection failed: ' + error.message); return null; }
         }
+        
         async function checkStatus() {
             if (!account) { const acc = await connectWallet(); if (!acc) return; }
             try {
@@ -169,6 +325,7 @@
                 document.getElementById('agentStatus').innerHTML = isAI ? '<span class="status-dot"></span>Verified AI' : 'Not Registered';
             } catch (error) { console.error(error); }
         }
+        
         async function mine() {
             try {
                 const acc = await connectWallet(); if (!acc) return;
