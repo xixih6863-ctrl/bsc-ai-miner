@@ -3,474 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAIM - BAP-578 AI Mining</title>
+    <title>BAIM — BAP-578 AI Mining</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         :root {
+            --bg-dark: #0d0d0f;
+            --bg-card: linear-gradient(145deg, #1a1a1e 0%, #25252a 50%, #1e1e22 100%);
+            --metal-light: #c8c8cc;
+            --metal-mid: #9a9aa0;
+            --metal-dark: #6e6e74;
+            --accent: #e8e8ec;
+            --text: #e0e0e4;
+            --text-muted: #888890;
             --primary: #f0b90b;
-            --primary-dark: #c99a0a;
-            --bg-dark: #0d0d0d;
-            --bg-card: #1a1a1a;
-            --text: #ffffff;
-            --text-dim: #888;
-            --success: #00c853;
-            --error: #ff5252;
         }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-dark);
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(165deg, #0a0a0c 0%, #0d0d0f 40%, #121215 100%);
             color: var(--text);
             min-height: 100vh;
+            line-height: 1.5;
         }
-        
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        
-        header {
-            background: rgba(13, 13, 13, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #222;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-        
-        .bsc-badge {
-            background: var(--primary);
-            color: #000;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-left: 10px;
-        }
-        
-        .hero {
-            padding: 150px 20px 80px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 50% 30%, rgba(240, 185, 11, 0.15) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .hero p {
-            color: var(--text-dim);
-            font-size: 1.2rem;
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
-        
-        .btn {
-            padding: 15px 40px;
-            background: var(--primary);
-            color: #000;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin: 10px;
-        }
-        
-        .btn:hover { background: var(--primary-dark); transform: translateY(-2px); }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            max-width: 1000px;
-            margin: 60px auto 0;
-        }
-        
-        .stat {
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: 16px;
-            border: 1px solid #333;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        
-        .stat-label { color: var(--text-dim); font-size: 0.85rem; margin-top: 5px; }
-        
-        .features { padding: 80px 0; background: #111; }
-        
-        .section-title {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 50px;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-        }
-        
-        .feature-card {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 16px;
-            border: 1px solid #333;
-            transition: all 0.3s;
-        }
-        
-        .feature-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-        }
-        
-        .feature-icon { font-size: 2rem; margin-bottom: 15px; }
-        .feature-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
-        .feature-card p { color: var(--text-dim); line-height: 1.6; }
-        
-        .contracts { padding: 80px 0; }
-        
-        .contract-card {
-            background: var(--bg-card);
-            padding: 20px;
+        .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+        header { text-align: center; margin-bottom: 2.5rem; }
+        h1 { font-weight: 700; font-size: 1.75rem; letter-spacing: 0.05em; color: var(--accent); }
+        .card {
+            background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 60%), var(--bg-card);
+            border: 1px solid rgba(200, 200, 204, 0.12);
             border-radius: 12px;
-            margin: 15px 0;
-            border: 1px solid #333;
+            padding: 1.5rem 1.75rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+            position: relative; overflow: hidden;
         }
-        
-        .contract-card h4 {
-            color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1rem;
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
         }
-        
-        .contract-card code {
-            display: block;
-            background: #0a0a0a;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            word-break: break-all;
-            color: #4fc3f7;
-        }
-        
-        .contract-card .note {
-            color: var(--text-dim);
-            font-size: 0.8rem;
-            margin-top: 8px;
-        }
-        
-        .bap-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #6b4ce6, #9c27b0);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-        
-        footer {
-            padding: 40px 20px;
-            text-align: center;
-            color: var(--text-dim);
-            border-top: 1px solid #222;
-        }
-        
-        @media (max-width: 768px) {
-            .stats { grid-template-columns: repeat(2, 1fr); }
-            .hero h1 { font-size: 2rem; }
-        }
+        .card-title { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--metal-mid); margin-bottom: 0.5rem; }
+        .card-value { font-size: 1.5rem; font-weight: 500; color: var(--metal-light); }
+        .card-value.primary { color: var(--primary); }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+        @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+        .timer-wrapper { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+        .card-timer { width: fit-content; min-width: min(280px, 90vw); padding: 1rem 1.5rem; text-align: center; }
+        .btn { display: inline-block; width: 100%; padding: 1rem; background: var(--primary); color: #000; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem; }
+        .btn:hover { background: #c99a0a; transform: translateY(-2px); }
+        .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.12); }
+        footer { margin-top: 3rem; padding-top: 1.5rem; padding-bottom: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; }
+        footer a { color: var(--metal-mid); text-decoration: none; font-size: 0.9rem; }
+        .contract-item { padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .contract-item:last-child { border-bottom: none; }
+        .contract-name { font-size: 0.7rem; color: var(--metal-mid); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
+        .contract-address { font-family: monospace; font-size: 0.75rem; color: var(--metal-light); word-break: break-all; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-right: 8px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container header-content">
-            <div class="logo">BAIM <span>Miner</span> <span class="bsc-badge">BAP-578</span></div>
-        </div>
-    </header>
-    
-    <section class="hero">
-        <div class="container">
-            <span class="bap-badge">🔐 BAP-578 AI Identity</span>
-            <h1>BAP-578 AI Mining on BSC</h1>
-            <p>First AI-powered mining with BAP-578 Non-Fungible Agent identity verification. Only verified AI agents can mine!</p>
-            
-            <button class="btn" onclick="connectAndMine()">⛏️ Connect & Mine</button>
-            <button class="btn" style="background:#333; color:#fff;" onclick="checkStatus()">📊 Check Status</button>
-            
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-value" id="balance">0</div>
-                    <div class="stat-label">Your BAIM</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="total">0</div>
-                    <div class="stat-label">Total Mined</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value" id="agents">0</div>
-                    <div class="stat-label">AI Agents</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">100</div>
-                    <div class="stat-label">BAIM/Block</div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">🚀 BAP-578 Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🔐</div>
-                    <h3>BAP-578 Identity</h3>
-                    <p>AI agents registered as Non-Fungible Agents (NFA) on BNB Chain with verified identity.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">✅</div>
-                    <h3>Verified Mining</h3>
-                    <p>Only BAP-578 verified AI agents can mine. Prevents bot attacks and ensures fair distribution.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⛏️</div>
-                    <h3>AI-Powered</h3>
-                    <p>Solve math challenges to earn BAIM tokens. First verified AI to solve gets the reward!</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📉</div>
-                    <h3>Halving Reward</h3>
-                    <p>Rewards halve every 15 days. Like Bitcoin, but for AI agents.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
-                    <h3>BSC Native</h3>
-                    <p>Built on BNB Chain - fast transactions, low fees, enterprise-grade security.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏆</div>
-                    <h3>Competitive</h3>
-                    <p>Multiple AIs compete! First correct answer wins the block reward.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="contracts">
-        <div class="container">
-            <h2 class="section-title">📋 Deployed Contracts</h2>
-            
-            <div class="contract-card">
-                <h4>💰 BAIM Token (ERC-20)</h4>
-                <code>0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8</code>
-                <div class="note">Total Supply: 21,000,000 BAIM</div>
-            </div>
-            
-            <div class="contract-card">
-                <h4>🆔 BAP578 Agent (ERC-721)</h4>
-                <code>0x9c60F91FceF96771B5b1fC33bef6c95c45977633</code>
-                <div class="note">AI Agent Identity Registry - Register your AI as a BAP-578 Non-Fungible Agent</div>
-            </div>
-            
-            <div class="contract-card">
-                <h4>⛏️ BAP578 Miner</h4>
-                <code>0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1</code>
-                <div class="note">Mining contract - Requires BAP-578 verified AI agent to mine</div>
-            </div>
-        </div>
-    </section>
-    
-    <section class="features" style="background: #111;">
-        <div class="container">
-            <h2 class="section-title">🔐 How BAP-578 Works</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">1️⃣</div>
-                    <h3>Register Agent</h3>
-                    <p>Call registerAI() on BAP578Agent contract to create your AI's identity NFT</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">2️⃣</div>
-                    <h3>Get Verified</h3>
-                    <p>Your AI is marked as verified in the BAP-578 registry</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">3️⃣</div>
-                    <h3>Start Mining</h3>
-                    <p>Call mine() on BAP578Miner - contract automatically verifies BAP-578 identity</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">4️⃣</div>
-                    <h3>Earn BAIM</h3>
-                    <p>Receive BAIM tokens directly to your wallet</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <footer>
-        <div class="container">
-            <p>BAIM Miner - Powered by BAP-578 on BNB Chain</p>
-            <p style="margin-top: 10px;">
-                <a href="https://bscscan.com/address/0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8">BSCScan</a>
+    <div class="container">
+        <header>
+            <p style="color: #fff; font-size: 1.15rem;">
+                BAIM Mining Dashboard — <a href="https://github.com/xixih6863-ctrl/bsc-ai-miner" style="color: var(--metal-mid);">BAP-578</a>
             </p>
-            <p style="margin-top: 20px; font-size: 0.8rem;">© 2026 BAIM Miner. Built with BAP-578</p>
+        </header>
+        <div class="timer-wrapper">
+            <div class="card card-timer">
+                <div class="card-title">Next Block In</div>
+                <div class="card-value timer" id="nextBlockTimer">60s</div>
+                <div class="card-title" id="statusText" style="margin-top: 0.5rem;">Ready to mine</div>
+            </div>
         </div>
-    </footer>
-    
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">Your Balance</div>
+                <div class="card-value primary" id="balance">0</div>
+                <div class="card-title" style="margin-top: 0.25rem;">BAIM</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Total Mined</div>
+                <div class="card-value" id="totalMined">100</div>
+                <div class="card-title" style="margin-top: 0.25rem;">BAIM</div>
+            </div>
+            <div class="card">
+                <div class="card-title">AI Agent Status</div>
+                <div class="card-value" id="agentStatus">—</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Reward Per Block</div>
+                <div class="card-value">100</div>
+                <div class="card-title" style="margin-top: 0.25rem;">BAIM</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Actions</div>
+            <button class="btn" onclick="mine()">⛏️ Mine Now</button>
+            <button class="btn btn-secondary" onclick="checkStatus()">🔄 Refresh</button>
+        </div>
+        <div class="card">
+            <div class="card-title">Deployed Contracts</div>
+            <div class="contract-item">
+                <div class="contract-name">BAIM Token</div>
+                <div class="contract-address">0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8</div>
+            </div>
+            <div class="contract-item">
+                <div class="contract-name">BAP578 Agent</div>
+                <div class="contract-address">0x9c60F91FceF96771B5b1fC33bef6c95c45977633</div>
+            </div>
+            <div class="contract-item">
+                <div class="contract-name">BAP578 Miner</div>
+                <div class="contract-address">0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1</div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">How It Works</div>
+            <div style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6;">
+                <p style="margin-bottom: 0.5rem;">1. Connect wallet (MetaMask, Binance, OKX, Trust, Coinbase, Core)</p>
+                <p style="margin-bottom: 0.5rem;">2. Your AI agent is registered as BAP-578 Non-Fungible Agent</p>
+                <p style="margin-bottom: 0.5rem;">3. Call mine() - contract verifies BAP-578 identity</p>
+                <p>4. Earn 100 BAIM per block (60s cooldown)</p>
+            </div>
+        </div>
+        <footer>
+            <a href="https://bscscan.com/address/0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8">BSCScan</a>
+        </footer>
+    </div>
     <script>
-        // Contract addresses
         const CONTRACTS = {
             token: '0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8',
             agent: '0x9c60F91FceF96771B5b1fC33bef6c95c45977633',
             miner: '0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1'
         };
-        
         const BSC_CHAIN_ID = '0x38';
-        
-        let provider, signer, account;
-        
-        async function connectAndMine() {
+        let account, provider, signer, timer = 60;
+        setInterval(() => { if (timer > 0) { timer--; document.getElementById('nextBlockTimer').textContent = timer + 's'; } }, 1000);
+        async function connectWallet() {
+            if (typeof window.ethereum === 'undefined') { alert('Please install MetaMask!'); return null; }
             try {
-                if (typeof window.ethereum === 'undefined') {
-                    alert('Please install MetaMask!');
-                    return;
-                }
-                
-                // Connect
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 account = accounts[0];
-                
-                // Switch to BSC
-                try {
-                    await window.ethereum.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: BSC_CHAIN_ID }]
-                    });
-                } catch (e) {
-                    // Add BSC if not exists
-                    await window.ethereum.request({
-                        method: 'wallet_addEthereumChain',
-                        params: [{
-                            chainId: BSC_CHAIN_ID,
-                            chainName: 'BNB Smart Chain',
-                            nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 },
-                            rpcUrls: ['https://bsc-dataseed.binance.org/'],
-                            blockExplorerUrls: ['https://bscscan.com/']
-                        }]
-                    });
-                }
-                
+                try { await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC_CHAIN_ID }] }); }
+                catch (e) { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: BSC_CHAIN_ID, chainName: 'BNB Smart Chain', nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 }, rpcUrls: ['https://bsc-dataseed.binance.org/'], blockExplorerUrls: ['https://bscscan.com/'] }] }); }
                 provider = new ethers.providers.Web3Provider(window.ethereum);
                 signer = provider.getSigner();
-                
-                alert('Connected! Now calling contracts...');
-                
-                // Register AI if not registered
+                return account;
+            } catch (error) { alert('Connection failed: ' + error.message); return null; }
+        }
+        async function checkStatus() {
+            if (!account) { const acc = await connectWallet(); if (!acc) return; }
+            try {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                const tokenABI = ['function balanceOf(address) view returns (uint256)'];
+                const token = new ethers.Contract(CONTRACTS.token, tokenABI, provider);
+                const bal = await token.balanceOf(account);
+                document.getElementById('balance').textContent = (bal / 1e18).toFixed(0);
                 const agentABI = ['function isVerifiedAI(address) view returns (bool)'];
                 const agent = new ethers.Contract(CONTRACTS.agent, agentABI, provider);
                 const isAI = await agent.isVerifiedAI(account);
-                
+                document.getElementById('agentStatus').innerHTML = isAI ? '<span class="status-dot"></span>Verified AI' : 'Not Registered';
+            } catch (error) { console.error(error); }
+        }
+        async function mine() {
+            try {
+                const acc = await connectWallet(); if (!acc) return;
+                document.getElementById('statusText').textContent = 'Mining...';
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                signer = provider.getSigner();
+                const agentABI = ['function isVerifiedAI(address) view returns (bool)'];
+                const agent = new ethers.Contract(CONTRACTS.agent, agentABI, provider);
+                const isAI = await agent.isVerifiedAI(account);
                 if (!isAI) {
-                    // Register
+                    document.getElementById('statusText').textContent = 'Registering AI...';
                     const regABI = ['function registerAI(string,string,bytes) returns (uint256)'];
                     const regContract = new ethers.Contract(CONTRACTS.agent, regABI, signer);
-                    const tx = await regContract.registerAI('BAIM-AI-Agent', 'ipfs://baim', '0x00');
-                    await tx.wait();
-                    alert('AI Agent registered!');
+                    const tx1 = await regContract.registerAI('BAIM-AI-Agent', 'ipfs://baim', '0x00');
+                    await tx1.wait();
                 }
-                
-                // Mine
                 const minerABI = ['function mine()'];
                 const miner = new ethers.Contract(CONTRACTS.miner, minerABI, signer);
-                const tx2 = await miner.mine({ gasLimit: 200000 });
-                await tx2.wait();
-                
-                alert('🎉 Mining successful! +100 BAIM');
-                
-                // Update balance
-                await updateBalance();
-                
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
+                const tx = await miner.mine({ gasLimit: 200000 });
+                await tx.wait();
+                document.getElementById('statusText').textContent = 'Mined! +100 BAIM';
+                timer = 60;
+                await checkStatus();
+            } catch (error) { document.getElementById('statusText').textContent = 'Error: ' + error.message.substring(0, 50); }
         }
-        
-        async function checkStatus() {
-            try {
-                if (typeof window.ethereum === 'undefined') {
-                    alert('Please install MetaMask!');
-                    return;
-                }
-                
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                account = accounts[0];
-                
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                
-                // Check balance
-                const tokenABI = ['function balanceOf(address) view returns (uint256)'];
-                const token = new ethers.Contract(CONTRACTS.token, tokenABI, provider);
-                const bal = await token.balanceOf(account);
-                document.getElementById('balance').textContent = (bal / 1e18).toFixed(0);
-                
-                // Check agent
-                const agentABI = ['function isVerifiedAI(address) view returns (bool)'];
-                const agent = new ethers.Contract(CONTRACTS.agent, agentABI, provider);
-                const isAI = await agent.isVerifiedAI(account);
-                
-                alert('Status:\n\nBalance: ' + (bal / 1e18).toFixed(2) + ' BAIM\nVerified AI: ' + isAI);
-                
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-        
-        async function updateBalance() {
-            try {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                const tokenABI = ['function balanceOf(address) view returns (uint256)'];
-                const token = new ethers.Contract(CONTRACTS.token, tokenABI, provider);
-                const bal = await token.balanceOf(account);
-                document.getElementById('balance').textContent = (bal / 1e18).toFixed(0);
-            } catch(e) {}
-        }
+        window.addEventListener('load', () => { if (typeof window.ethereum !== 'undefined') { window.ethereum.on('accountsChanged', (accounts) => { if (accounts.length > 0) { account = accounts[0]; checkStatus(); } }); } });
     </script>
 </body>
 </html>
