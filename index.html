@@ -5,55 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAIM — BAP-578 AI Mining</title>
     <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0d0d0f;
-            --bg-card: linear-gradient(145deg, #1a1a1e 0%, #25252a 50%, #1e1e22 100%);
-            --metal-light: #c8c8cc;
-            --metal-mid: #9a9aa0;
-            --metal-dark: #6e6e74;
-            --accent: #e8e8ec;
-            --text: #e0e0e4;
-            --text-muted: #888890;
-            --primary: #f0b90b;
-            --code-bg: #0a0a0c;
-        }
+        :root { --bg-dark: #0d0d0f; --bg-card: linear-gradient(145deg, #1a1a1e, #25252a); --metal-light: #c8c8cc; --metal-mid: #9a9aa0; --text: #e0e0e4; --primary: #f0b90b; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(165deg, #0a0a0c 0%, #0d0d0f 40%, #121215 100%);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.5;
-        }
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(165deg, #0a0a0c, #0d0d0f, #121215); color: var(--text); min-height: 100vh; }
         .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
         header { text-align: center; margin-bottom: 2rem; }
-        h1 { font-weight: 700; font-size: 1.75rem; letter-spacing: 0.05em; color: var(--accent); }
-        .card {
-            background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 60%), var(--bg-card);
-            border: 1px solid rgba(200, 200, 204, 0.12);
-            border-radius: 12px;
-            padding: 1.5rem 1.75rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
-            position: relative; overflow: hidden;
-        }
-        .card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
-        }
+        h1 { font-weight: 700; font-size: 1.75rem; color: var(--metal-light); }
+        .card { background: var(--bg-card); border: 1px solid rgba(200,200,204,0.12); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
         .card-title { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--metal-mid); margin-bottom: 0.75rem; }
         .card-value { font-size: 1.5rem; font-weight: 500; color: var(--metal-light); }
         .card-value.primary { color: var(--primary); }
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
         @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
         .timer-wrapper { display: flex; justify-content: center; margin-bottom: 1.5rem; }
-        .card-timer { width: fit-content; min-width: min(280px, 90vw); padding: 1rem 1.5rem; text-align: center; }
-        .btn { display: inline-block; width: 100%; padding: 1rem; background: var(--primary); color: #000; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; margin-bottom: 0.75rem; }
-        .btn:hover { background: #c99a0a; transform: translateY(-2px); }
+        .card-timer { width: fit-content; min-width: 280px; padding: 1rem 1.5rem; text-align: center; }
+        .btn { display: block; width: 100%; padding: 1rem; background: var(--primary); color: #000; border: none; border-radius: 8px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-bottom: 0.75rem; }
+        .btn:hover { background: #c99a0a; }
         .btn-secondary { background: rgba(255,255,255,0.08); color: var(--text); }
         .btn-secondary:hover { background: rgba(255,255,255,0.12); }
         footer { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; }
@@ -61,37 +30,22 @@
         .contract-item { padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .contract-item:last-child { border-bottom: none; }
         .contract-name { font-size: 0.7rem; color: var(--metal-mid); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.25rem; }
-        .contract-address { font-family: 'Fira Code', monospace; font-size: 0.7rem; color: var(--metal-light); word-break: break-all; }
+        .contract-address { font-family: monospace; font-size: 0.7rem; color: var(--metal-light); word-break: break-all; }
         .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--primary); margin-right: 8px; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .code-block { background: var(--code-bg); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1rem; margin: 0.75rem 0; overflow-x: auto; }
-        .code-block code { font-family: 'Fira Code', monospace; font-size: 0.8rem; color: #89ddff; line-height: 1.6; }
-        .code-block .comment { color: #6e6e74; }
-        .code-block .keyword { color: #c792ea; }
-        .code-block .string { color: #c3e88d; }
-        .step { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
-        .step-num { width: 28px; height: 28px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
-        .step-content h4 { font-size: 0.95rem; margin-bottom: 0.25rem; color: var(--metal-light); }
-        .step-content p { font-size: 0.85rem; color: var(--text-muted); }
-        .tab-buttons { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-        .tab-btn { padding: 0.5rem 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--metal-mid); font-size: 0.8rem; cursor: pointer; }
-        .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); }
-        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <p style="color: #fff; font-size: 1.15rem;">
-                BAIM Mining Dashboard — <a href="https://github.com/xixih6863-ctrl/bsc-ai-miner" style="color: var(--metal-mid);">BAP-578</a>
-            </p>
+            <h1>BAIM Mining — BAP-578</h1>
         </header>
         
         <div class="timer-wrapper">
             <div class="card card-timer">
-                <div class="card-title">Next Block In</div>
-                <div class="card-value timer" id="nextBlockTimer">60s</div>
-                <div class="card-title" id="statusText" style="margin-top: 0.5rem;">Ready to mine</div>
+                <div class="card-title">Next Block</div>
+                <div class="card-value" id="timer">60s</div>
+                <div class="card-title" id="status" style="margin-top:0.5rem">Ready</div>
             </div>
         </div>
         
@@ -99,121 +53,23 @@
             <div class="card">
                 <div class="card-title">Your Balance</div>
                 <div class="card-value primary" id="balance">0</div>
-                <div class="card-title" style="margin-top: 0.25rem;">BAIM</div>
+                <div class="card-title" style="margin-top:0.25rem">BAIM</div>
             </div>
             <div class="card">
-                <div class="card-title">Total Mined</div>
-                <div class="card-value" id="totalMined">100</div>
-                <div class="card-title" style="margin-top: 0.25rem;">BAIM</div>
-            </div>
-            <div class="card">
-                <div class="card-title">AI Agent Status</div>
+                <div class="card-title">AI Status</div>
                 <div class="card-value" id="agentStatus">—</div>
-            </div>
-            <div class="card">
-                <div class="card-title">Reward Per Block</div>
-                <div class="card-value">100</div>
-                <div class="card-title" style="margin-top: 0.25rem;">BAIM</div>
             </div>
         </div>
         
         <div class="card">
-            <div class="card-title">Actions</div>
             <button class="btn" onclick="mine()">⛏️ Mine Now</button>
             <button class="btn btn-secondary" onclick="checkStatus()">🔄 Refresh</button>
         </div>
         
         <div class="card">
-            <div class="card-title">Deployed Contracts</div>
-            <div class="contract-item">
-                <div class="contract-name">BAIM Token</div>
-                <div class="contract-address">0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8</div>
-            </div>
-            <div class="contract-item">
-                <div class="contract-name">BAP578 Agent</div>
-                <div class="contract-address">0x9c60F91FceF96771B5b1fC33bef6c95c45977633</div>
-            </div>
-            <div class="contract-item">
-                <div class="contract-name">BAP578 Miner</div>
-                <div class="contract-address">0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1</div>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-title">🤖 How to Install & Use</div>
-            
-            <div class="tab-buttons">
-                <button class="tab-btn active" onclick="showTab('install')">Install</button>
-                <button class="tab-btn" onclick="showTab('code')">Code</button>
-                <button class="tab-btn" onclick="showTab('how')">How It Works</button>
-            </div>
-            
-            <div id="tab-install">
-                <div class="step">
-                    <div class="step-num">1</div>
-                    <div class="step-content">
-                        <h4>Create folder</h4>
-                        <p>mkdir -p ~/.openclaw/skills/baim-miner</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num">2</div>
-                    <div class="step-content">
-                        <h4>Set private key</h4>
-                        <p>export MINER_PRIVATE_KEY="your_key"</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num">3</div>
-                    <div class="step-content">
-                        <h4>Run mining script</h4>
-                        <p>node miner.js</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="tab-code" class="hidden">
-                <div class="code-block"><code><span class="comment">// BAP-578 AI Mining</span>
-<span class="keyword">const</span> { ethers } = <span class="keyword">require</span>(<span class="string">'ethers'</span>);
-
-<span class="keyword">const</span> PRIVATE_KEY = <span class="string">'your_key'</span>;
-<span class="keyword">const</span> MINER = <span class="string">'0x2e49...'</span>;
-
-<span class="keyword">async function</span> <span class="function">mine</span>() {
-  <span class="keyword">const</span> p = <span class="keyword">new</span> ethers.providers.JsonRpcProvider(<span class="string">'https://bsc-dataseed.binance.org/'</span>);
-  <span class="keyword">const</span> w = <span class="keyword">new</span> ethers.Wallet(PRIVATE_KEY, p);
-  
-  <span class="keyword">const</span> miner = <span class="keyword">new</span> ethers.Contract(MINER, [<span class="string">'function mine()'</span>], w);
-  <span class="keyword">await</span> miner.mine();
-  console.log(<span class="string">'🎉 +100 BAIM'</span>);
-}
-
-<span class="function">mine</span>();</code></div>
-            </div>
-            
-            <div id="tab-how" class="hidden">
-                <div class="step">
-                    <div class="step-num">1</div>
-                    <div class="step-content">
-                        <h4>AI is already registered</h4>
-                        <p>Wallet verified as BAP-578 AI Agent</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num">2</div>
-                    <div class="step-content">
-                        <h4>Call mine()</h4>
-                        <p>Contract verifies BAP-578 identity</p>
-                    </div>
-                </div>
-                <div class="step">
-                    <div class="step-num">3</div>
-                    <div class="step-content">
-                        <h4>Receive BAIM</h4>
-                        <p>+100 BAIM per block (60s cooldown)</p>
-                    </div>
-                </div>
-            </div>
+            <div class="card-title">Contracts</div>
+            <div class="contract-item"><div class="contract-name">Token</div><div class="contract-address">0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8</div></div>
+            <div class="contract-item"><div class="contract-name">Miner</div><div class="contract-address">0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1</div></div>
         </div>
         
         <footer>
@@ -222,68 +78,47 @@
     </div>
     
     <script>
-        function showTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('tab-install').classList.add('hidden');
-            document.getElementById('tab-code').classList.add('hidden');
-            document.getElementById('tab-how').classList.add('hidden');
-            document.getElementById('tab-' + tab).classList.remove('hidden');
-        }
-        
-        const CONTRACTS = {
-            token: '0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8',
-            agent: '0x9c60F91FceF96771B5b1fC33bef6c95c45977633',
-            miner: '0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1'
-        };
-        const BSC_CHAIN_ID = '0x38';
+        const CONTRACTS = { token: '0xDC7Cb643ECEB34F721A712863D1B3a79B3852aa8', miner: '0x2e49FEbf9bac290f19313c32dAC1D9F06Cc8FEB1' };
+        const BSC = '0x38';
         let account, provider, signer, timer = 60;
-        setInterval(() => { if (timer > 0) { timer--; document.getElementById('nextBlockTimer').textContent = timer + 's'; } }, 1000);
+        setInterval(() => { if(timer > 0) { timer--; document.getElementById('timer').textContent = timer + 's'; } }, 1000);
         
-        async function connectWallet() {
-            if (typeof window.ethereum === 'undefined') { alert('Please install MetaMask!'); return null; }
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                account = accounts[0];
-                try { await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC_CHAIN_ID }] }); }
-                catch (e) { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: BSC_CHAIN_ID, chainName: 'BNB Smart Chain', nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 }, rpcUrls: ['https://bsc-dataseed.binance.org/'], blockExplorerUrls: ['https://bscscan.com/'] }] }); }
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                return account;
-            } catch (error) { alert('Connection failed: ' + error.message); return null; }
+        async function connect() {
+            if(typeof window.ethereum === 'undefined') { alert('Install MetaMask!'); return null; }
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            account = accounts[0];
+            try { await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BSC }] }); }
+            catch(e) { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: BSC, chainName: 'BNB', nativeCurrency: { name: 'BNB', symbol: 'BNB', decimals: 18 }, rpcUrls: ['https://bsc-dataseed.binance.org/'], blockExplorerUrls: ['https://bscscan.com/'] }] }); }
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+            return account;
         }
         
         async function checkStatus() {
-            if (!account) { const acc = await connectWallet(); if (!acc) return; }
-            try {
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                const tokenABI = ['function balanceOf(address) view returns (uint256)'];
-                const token = new ethers.Contract(CONTRACTS.token, tokenABI, provider);
-                const bal = await token.balanceOf(account);
-                document.getElementById('balance').textContent = (bal / 1e18).toFixed(0);
-                const agentABI = ['function isVerifiedAI(address) view returns (bool)'];
-                const agent = new ethers.Contract(CONTRACTS.agent, agentABI, provider);
-                const isAI = await agent.isVerifiedAI(account);
-                document.getElementById('agentStatus').innerHTML = isAI ? '<span class="status-dot"></span>Verified AI' : 'Not Registered';
-            } catch (error) { console.error(error); }
+            if(!account) { await connect(); if(!account) return; }
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            const token = new ethers.Contract(CONTRACTS.token, ['function balanceOf(address) view returns (uint256)'], provider);
+            const bal = await token.balanceOf(account);
+            document.getElementById('balance').textContent = (bal / 1e18).toFixed(0);
+            document.getElementById('agentStatus').innerHTML = '<span class="status-dot"></span>Ready';
         }
         
         async function mine() {
+            await connect(); if(!account) return;
+            document.getElementById('status').textContent = 'Mining...';
+            provider = new ethers.providers.Web3Provider(window.ethereum);
+            signer = provider.getSigner();
+            const miner = new ethers.Contract(CONTRACTS.miner, ['function mine()'], signer);
             try {
-                const acc = await connectWallet(); if (!acc) return;
-                document.getElementById('statusText').textContent = 'Mining...';
-                provider = new ethers.providers.Web3Provider(window.ethereum);
-                signer = provider.getSigner();
-                const minerABI = ['function mine()'];
-                const miner = new ethers.Contract(CONTRACTS.miner, minerABI, signer);
                 const tx = await miner.mine({ gasLimit: 200000 });
                 await tx.wait();
-                document.getElementById('statusText').textContent = 'Mined! +100 BAIM';
+                document.getElementById('status').textContent = 'Mined! +100 BAIM';
                 timer = 60;
                 await checkStatus();
-            } catch (error) { document.getElementById('statusText').textContent = 'Error: ' + error.message.substring(0, 50); }
+            } catch(e) { document.getElementById('status').textContent = 'Error: ' + e.message.substring(0,30); }
         }
-        window.addEventListener('load', () => { if (typeof window.ethereum !== 'undefined') { window.ethereum.on('accountsChanged', (accounts) => { if (accounts.length > 0) { account = accounts[0]; checkStatus(); } }); } });
+        
+        window.addEventListener('load', () => { if(typeof window.ethereum !== 'undefined') { window.ethereum.on('accountsChanged', a => { if(a.length) { account = a[0]; checkStatus(); } }); } });
     </script>
 </body>
 </html>
